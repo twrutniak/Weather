@@ -9,7 +9,7 @@
         Weather
       </q-toolbar-title>
 
-      <SearchBar></SearchBar>
+      <SearchBar @suggestion-click="onSuggesstionClick"></SearchBar>
 
       <q-space></q-space>
 
@@ -43,6 +43,9 @@ export default {
       this.rightDrawerOpen = !this.rightDrawerOpen;
       this.$emit('toggle-right-drawer', this.rightDrawerOpen);
     },
+    onSuggesstionClick: function(featureData) {
+      this.$emit('suggestion-click', featureData);
+    }
   },
 
   mounted() {
