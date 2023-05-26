@@ -44,11 +44,43 @@ function getWeathercodeIcon(weathercode, time) {
     return file;
 }
 
+function setLocalStorageItem(object){
+    let parsed_data = JSON.stringify(object);
+    localStorage.setItem('weather_favorites', parsed_data);
+    return true;
+}
 
+function getLocalStorageItem(name){
+    let raw_data = localStorage.getItem(name);
+    let parsed_data = JSON.parse(raw_data);
+    return parsed_data;
+}
 
-// await function sleep (ms) {
-//     return new Promise(resolve => setTimeout(resolve, ms))
-// }
+function getWeatherFavorites(){
+    return getLocalStorageItem('weather_favorites');
+}
+
+function addWeatherFavorite(item) {
+    let favorites_array = getWeatherFavorites();
+    if (favorites_array == null) {
+        favorites_array = [];
+    }
+    favorites_array.push(item);
+    setLocalStorageItem(favorites_array);
+}
+
+function removeWeatherFavorite(item) {
+    let favorites_array = getWeatherFavorites();
+    let index = favorites_array.indexOf(item);
+    favorites_array.splice(index, 1);
+    setLocalStorageItem(favorites_array);
+}
+
 
 export { constructWeatherURL }
 export { getWeathercodeIcon }
+export { setLocalStorageItem }
+export { getLocalStorageItem }
+export { getWeatherFavorites }
+export { addWeatherFavorite }
+export { removeWeatherFavorite }

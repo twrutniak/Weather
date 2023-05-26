@@ -33,6 +33,7 @@
   
 <script>
 import { Notify } from 'quasar'
+import { addWeatherFavorite } from '@/helper_functions';
 
 export default {
     name: 'ImageData',
@@ -44,7 +45,8 @@ export default {
         locationName: { type: String, required: true },
         minTemp: { type: Number, required: true },
         maxTemp: { type: Number, required: true },
-        meanTemp: { type: Number, required: true }
+        meanTemp: { type: Number, required: true },
+        featureData: { type: Object, required: true }
     },
 
     data() {
@@ -54,8 +56,11 @@ export default {
 
     methods: {
         addToFavorites: function () {
+            addWeatherFavorite(this.$props.featureData);
             Notify.create({
-                message: 'Danger, Will Robinson! Danger!'
+                message: 'Success!',
+                caption: `Added ${this.locationName} to favorites.`,
+                color: 'positive'
             })
         }
     },

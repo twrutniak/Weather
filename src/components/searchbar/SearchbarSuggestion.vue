@@ -5,13 +5,6 @@
             <span class="description">{{ featureData.properties.geocoding.label }}</span>
         </div>
     </q-btn>
-
-
-
-    <!-- <article class="feature" @click="suggestionClick">
-        <div class="name">{{ featureData.properties.geocoding.name }}</div>
-        <div class="description">{{ featureData.properties.geocoding.label }}</div>
-    </article> -->
 </template>
   
   
@@ -43,13 +36,6 @@ export default {
     width: 280px;
     display: flex;
     flex-flow: column;
-    // padding: 5px;
-    // background-color: white;
-
-    // border: 2px solid $primary;
-    // border-radius: 5px;
-    // cursor: pointer;
-    // transition: 0.3s;
 }
 
 .q-btn__content {
@@ -70,7 +56,6 @@ export default {
     font-size: 0.725rem;
     text-overflow: ellipsis;
     overflow: hidden;
-    // white-space: nowrap;
 }
 
 </style>

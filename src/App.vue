@@ -5,7 +5,7 @@
     </MainHeader>
 
     <q-drawer class="favorites-drawer" v-model="rightDrawerOpen" side="right" bordered>
-      <FavoritesGrid></FavoritesGrid>
+      <FavoritesGrid @favorite-tile-selected="onFavoriteTileSelected"></FavoritesGrid>
     </q-drawer>
 
 
@@ -83,6 +83,9 @@ export default {
       await axios.get(url).then(response => {
         this.selectedFeatureWeatherData = response.data;
       });
+    },
+    onFavoriteTileSelected: async function(data) {
+      await this.onSuggestionClick(data);
     }
   },
   mounted: function () {

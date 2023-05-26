@@ -1,6 +1,7 @@
 <template>
     <q-card class="weather-tile-card bg-grey-1">
         <ImageData
+            :feature-data="this.$props.featureData"
             :weather-icon-path="weatherIconPath"
             :location-name="locationName"
             :min-temp="minTemp"

@@ -1,16 +1,17 @@
 <template>
   <section class="favorites-grid">
-    <FavoritesTile :feature-data="{}"></FavoritesTile>
-    <FavoritesTile :feature-data="{}"></FavoritesTile>
+    <FavoritesTile @favorite-tile-selected="onFavoriteTileSelected" v-for="feature in featureArray" :key="feature" :selected-feature="feature"></FavoritesTile>
   </section>
 </template>
 
 
 <script>
+import { getWeatherFavorites } from '@/helper_functions';
 import FavoritesTile from './FavoritesTile.vue';
 
 export default {
   name: 'FavoritesGrid',
+  emits: ['favoriteTileSelected'],
   props: {
   },
 
@@ -20,14 +21,24 @@ export default {
 
   data() {
     return {
-      drawerOpen: false,
+      featureArray: [],
     };
   },
 
   methods: {
+    onFavoriteTileSelected: function(data) {
+      this.$emit('favoriteTileSelected', data);
+    },
+    reloadFavorites: function() {
+      this.featureArray = getWeatherFavorites();
+    },
+    deleteFavorite: function(element) {
+
+    },
   },
 
   mounted() {
+    this.reloadFavorites();
   },
 
 };
