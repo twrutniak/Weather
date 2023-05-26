@@ -1,101 +1,128 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
-    <q-header elevated class="glossy">
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          @click="leftDrawerOpen = !leftDrawerOpen"
-          aria-label="Menu"
-          icon="menu"
-        />
+  <q-layout view="hHh lpR fFf">
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+    <MainHeader @toggle-right-drawer="onToggleRightDrawer" @suggestion-click="onSuggestionClick">
+    </MainHeader>
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-      class="bg-grey-2"
-    >
-      <q-list>
-        <q-item-label header>Essential Links</q-item-label>
-        <q-item clickable tag="a" target="_blank" href="https://quasar.dev">
-          <q-item-section avatar>
-            <q-icon name="school" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Docs</q-item-label>
-            <q-item-label caption>quasar.dev</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://github.com/quasarframework/">
-          <q-item-section avatar>
-            <q-icon name="code" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Github</q-item-label>
-            <q-item-label caption>github.com/quasarframework</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://chat.quasar.dev">
-          <q-item-section avatar>
-            <q-icon name="chat" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Discord Chat Channel</q-item-label>
-            <q-item-label caption>chat.quasar.dev</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://forum.quasar.dev">
-          <q-item-section avatar>
-            <q-icon name="forum" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Forum</q-item-label>
-            <q-item-label caption>forum.quasar.dev</q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="_blank" href="https://twitter.com/quasarframework">
-          <q-item-section avatar>
-            <q-icon name="rss_feed" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Twitter</q-item-label>
-            <q-item-label caption>@quasarframework</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+    <q-drawer class="favorites-drawer" v-model="rightDrawerOpen" side="right" bordered>
+      <FavoritesGrid @favorite-tile-selected="onFavoriteTileSelected"></FavoritesGrid>
     </q-drawer>
 
+
     <q-page-container>
-      <HelloWorld />
+      <q-page  class="main-page">
+      <Transition name="fade">
+        <div v-if="weatherDataVisible" class="container-wrapper">
+          <WeatherTile  :feature-data="selectedFeature"
+                        :weather-data="selectedFeatureWeatherData">
+          </WeatherTile>
+        </div>
+      </Transition>
+      </q-page>
+
+      <LoadingOverlay ref="loading-overlay"></LoadingOverlay>
+
     </q-page-container>
+
   </q-layout>
 </template>
 
 <script>
-import { ref } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+import MainHeader from './components/MainHeader.vue';
+import FavoritesGrid from './components/favorites_grid/FavoritesGrid.vue';
+import axios from 'axios';
+import { constructWeatherURL } from '@/helper_functions';
+import LoadingOverlay from './components/LoadingOverlay.vue';
+import WeatherTile from './components/data_presentation/WeatherTile.vue';
 
 export default {
-  name: 'LayoutDefault',
-
+  name: 'App',
   components: {
-    HelloWorld
+    'MainHeader': MainHeader,
+    'LoadingOverlay': LoadingOverlay,
+    'WeatherTile': WeatherTile,
+    'FavoritesGrid': FavoritesGrid
   },
 
-  setup () {
+  data() {
     return {
-      leftDrawerOpen: ref(false)
+      rightDrawerOpen: false,
+      selectedFeature: Object,
+      selectedFeatureWeatherData: Object,
+      weatherDataVisible: false,
+    };
+  },
+
+  methods: {
+    displayWeatherData: function () {
+
+    },
+    onToggleRightDrawer: function () {
+      this.rightDrawerOpen = !this.rightDrawerOpen;
+    },
+
+    onSuggestionClick: async function (featureData) {
+      this.selectedFeature = featureData;
+      this.$refs['loading-overlay'].openOverlay();
+      await this.callWeatherAPI();
+      this.$refs['loading-overlay'].closeOverlay();
+      this.weatherDataVisible = true;
+    },
+
+    callWeatherAPI: async function () {
+      let url = constructWeatherURL(
+        // API base URL
+        process.env.VUE_APP_WEATHER_URL,
+        // latitude
+        this.selectedFeature.geometry.coordinates[1],
+        // longitude
+        this.selectedFeature.geometry.coordinates[0],
+        // forecast days
+        7,
+      );
+      await axios.get(url).then(response => {
+        this.selectedFeatureWeatherData = response.data;
+      });
+    },
+    onFavoriteTileSelected: async function(data) {
+      await this.onSuggestionClick(data);
     }
+  },
+  mounted: function () {
+  },
+
+};
+</script>
+<style scoped lang="scss">
+.main-page {
+  background-color: $indigo-1;
+}
+@media (min-width: 0px) {
+  .container-wrapper {
+    padding: 10px 10px 0 10px;
   }
 }
-</script>
+@media (min-width: $breakpoint-xs) {
+  .container-wrapper {
+    padding: 10px 10px 0px 10px;
+  }
+}
+
+@media (min-width: $breakpoint-sm) {
+  .container-wrapper {
+    padding: 50px 50px 0px 50px;
+  }
+}
+
+@media (min-width: $breakpoint-md) {
+  .container-wrapper {
+    padding: 50px 50px 0px 50px;
+  }
+}
+
+@media (min-width: $breakpoint-lg) {
+  .container-wrapper {
+    padding: 50px 50px 0px 50px;
+  }
+}
+</style>
