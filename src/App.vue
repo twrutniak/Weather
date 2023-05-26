@@ -4,13 +4,16 @@
     <MainHeader @toggle-right-drawer="onToggleRightDrawer" @suggestion-click="onSuggestionClick">
     </MainHeader>
 
-    <FavoritesDrawer :drawer-open="rightDrawerOpen"></FavoritesDrawer>
+    <q-drawer class="favorites-drawer" v-model="rightDrawerOpen" side="right" bordered>
+      <FavoritesGrid></FavoritesGrid>
+    </q-drawer>
+
 
     <q-page-container>
-      <q-page>
+      <q-page  class="main-page">
       <Transition name="fade">
         <div v-if="weatherDataVisible" class="container-wrapper">
-          <WeatherTile  :location-name="selectedFeature.properties.geocoding.name"
+          <WeatherTile  :feature-data="selectedFeature"
                         :weather-data="selectedFeatureWeatherData">
           </WeatherTile>
         </div>
@@ -26,19 +29,19 @@
 
 <script>
 import MainHeader from './components/MainHeader.vue';
-import FavoritesDrawer from './components/FavoritesDrawer.vue';
+import FavoritesGrid from './components/favorites_grid/FavoritesGrid.vue';
 import axios from 'axios';
 import { constructWeatherURL } from '@/helper_functions';
 import LoadingOverlay from './components/LoadingOverlay.vue';
-import WeatherTile from './components/WeatherTile.vue';
+import WeatherTile from './components/data_presentation/WeatherTile.vue';
 
 export default {
   name: 'App',
   components: {
     'MainHeader': MainHeader,
-    'FavoritesDrawer': FavoritesDrawer,
     'LoadingOverlay': LoadingOverlay,
-    'WeatherTile': WeatherTile
+    'WeatherTile': WeatherTile,
+    'FavoritesGrid': FavoritesGrid
   },
 
   data() {
@@ -54,8 +57,8 @@ export default {
     displayWeatherData: function () {
 
     },
-    onToggleRightDrawer: function (state) {
-      this.rightDrawerOpen = state;
+    onToggleRightDrawer: function () {
+      this.rightDrawerOpen = !this.rightDrawerOpen;
     },
 
     onSuggestionClick: async function (featureData) {
@@ -67,7 +70,6 @@ export default {
     },
 
     callWeatherAPI: async function () {
-      console.log(this.selectedFeature.geometry.coordinates);
       let url = constructWeatherURL(
         // API base URL
         process.env.VUE_APP_WEATHER_URL,
@@ -79,17 +81,19 @@ export default {
         7,
       );
       await axios.get(url).then(response => {
-        console.log('weather data:', response.data)
         this.selectedFeatureWeatherData = response.data;
       });
     }
   },
   mounted: function () {
-  }
+  },
 
 };
 </script>
 <style scoped lang="scss">
+.main-page {
+  background-color: $indigo-1;
+}
 @media (min-width: 0px) {
   .container-wrapper {
     padding: 10px 10px 0 10px;

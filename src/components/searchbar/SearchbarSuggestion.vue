@@ -1,8 +1,17 @@
 <template>
-    <article class="feature" @click="suggestionClick">
+    <q-btn class="feature" color="primary" no-caps  @click="suggestionClick">
+        <div>
+            <span class="name" text-white>{{ featureData.properties.geocoding.name }}</span><br>
+            <span class="description">{{ featureData.properties.geocoding.label }}</span>
+        </div>
+    </q-btn>
+
+
+
+    <!-- <article class="feature" @click="suggestionClick">
         <div class="name">{{ featureData.properties.geocoding.name }}</div>
         <div class="description">{{ featureData.properties.geocoding.label }}</div>
-    </article>
+    </article> -->
 </template>
   
   
@@ -24,7 +33,6 @@ export default {
     },
 
     mounted() {
-        console.log(this.$props.featureData)
     },
 
 };
@@ -32,15 +40,21 @@ export default {
 
 <style scoped lang="scss">
 .feature {
+    width: 280px;
     display: flex;
     flex-flow: column;
-    padding: 5px;
-    background-color: white;
+    // padding: 5px;
+    // background-color: white;
 
-    border: 2px solid $primary;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s;
+    // border: 2px solid $primary;
+    // border-radius: 5px;
+    // cursor: pointer;
+    // transition: 0.3s;
+}
+
+.q-btn__content {
+    display: flex;
+    flex-flow: column;
 }
 
 .feature:hover {
@@ -48,16 +62,15 @@ export default {
 }
 
 .feature .name {
-    color: rgb(0, 0, 0);
     font-size: 1rem;
 }
 
 .feature .description {
-    color: rgb(83, 79, 79);
+    color: rgb(234, 223, 223);
     font-size: 0.725rem;
     text-overflow: ellipsis;
     overflow: hidden;
-    white-space: nowrap;
+    // white-space: nowrap;
 }
 
 </style>

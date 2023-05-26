@@ -63,7 +63,6 @@ export default {
       this.closeSuggestions();
     },
     openSuggestionsIfOpenable: function () {
-      console.log(this.suggestionList.length)
       if (this.suggestionList.length > 0) {
         this.openSuggestions();
         return;

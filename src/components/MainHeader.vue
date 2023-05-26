@@ -40,8 +40,7 @@ export default {
 
   methods: {
     toggleRightDrawer: function () {
-      this.rightDrawerOpen = !this.rightDrawerOpen;
-      this.$emit('toggle-right-drawer', this.rightDrawerOpen);
+      this.$emit('toggle-right-drawer');
     },
     onSuggesstionClick: function(featureData) {
       this.$emit('suggestion-click', featureData);
