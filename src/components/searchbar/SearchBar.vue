@@ -19,6 +19,7 @@
 
 <script>
 import axios from 'axios';
+import { Notify } from 'quasar';
 import debounce from 'lodash.debounce';
 import SearchbarSuggestion from './SearchbarSuggestion.vue';
 
@@ -38,13 +39,22 @@ export default {
   },
   methods: {
     handleInput: async function () {
-      axios.get(
-        process.env.VUE_APP_NOMINATIM_URL + `/search?q=${this.searchKeywords}&format=geocodejson&accept-language=pl`
-      ).then(response => {
-        this.suggestionList = response.data.features;
-        this.suggestionsLoading = false;
-        this.openSuggestions();
-      });
+      try {
+        axios.get(
+          process.env.VUE_APP_NOMINATIM_URL + `/search?q=${this.searchKeywords}&format=geocodejson&accept-language=pl`
+        ).then(response => {
+          this.suggestionList = response.data.features;
+          this.suggestionsLoading = false;
+          this.openSuggestions();
+        });
+      } catch (error) {
+        Notify.create({
+          message: 'Error!',
+          caption: `Encountered an error while searching for ${this.searchKeywords}. 
+                    Please try again later or contact our staff.`,
+          color: 'negative'
+        });
+      }
     },
 
     handleInputDebounced: debounce(function () {

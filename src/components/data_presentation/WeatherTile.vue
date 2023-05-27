@@ -6,7 +6,9 @@
             :location-name="locationName"
             :min-temp="minTemp"
             :max-temp="maxTemp"
-            :mean-temp="meanTemp">
+            :mean-temp="meanTemp"
+            :current-temp="currentTemp"
+            @add-to-favorites="onAddToFavorites">
         </ImageData>
 
         <q-card-section class="numeric-data">
@@ -62,6 +64,7 @@ export default {
     name: 'WeatherTile',
     components: { 'Line': Line,
                   'ImageData': ImageData },
+    emits: ['addToFavorites'],
 
     props: {
         featureData: { type: Object, required: true},
@@ -83,6 +86,7 @@ export default {
             minTemp: Number,
             maxTemp: Number,
             meanTemp: Number,
+            currentTemp: Number,
             initialRender: true,
             chartOptions: {
                 scales: {
@@ -153,6 +157,7 @@ export default {
             let visibility_data = this.$props.weatherData.hourly.visibility;
 
             // Getting basic weather info
+            this.currentTemp = temperature_data[0];
             this.maxTemp = Math.max.apply(Math, temperature_data);
             this.minTemp = Math.min.apply(Math, temperature_data);
             this.meanTemp = (temperature_data.reduce((a, b) => a + b, 0) / temperature_data.length).toFixed(1);
@@ -200,6 +205,9 @@ export default {
 
             this.chartLoaded = true;
         },
+        onAddToFavorites: function() {
+            this.$emit('addToFavorites');
+        }
     },
     mounted: async function () {
         if (this.initialRender) {
