@@ -12,7 +12,6 @@
 <script>
 import { getWeatherFavorites, removeWeatherFavorite } from '@/helper_functions';
 import FavoritesTile from './FavoritesTile.vue';
-import { Notify } from 'quasar'
 
 export default {
   name: 'FavoritesGrid',
@@ -35,7 +34,6 @@ export default {
       this.$emit('favoriteTileSelected', data);
     },
     onFavoriteTileRemoved: function(data) {
-      console.log('removing tile: ', data)
       this.deleteFavorite(data);
       this.reloadFavorites();
     },
@@ -45,11 +43,6 @@ export default {
     deleteFavorite: function (element) {
       removeWeatherFavorite(element);
       this.reloadFavorites();
-      Notify.create({
-        message: 'Success!',
-        caption: `Removed ${element} from favorites.`,
-        color: 'positive'
-      })
     },
   },
 

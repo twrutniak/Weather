@@ -39,6 +39,7 @@ export default {
     name: 'ImageData',
     components: {
     },
+    emits:['addToFavorites'],
 
     props: {
         weatherIconPath: { type: String, required: true },
@@ -63,6 +64,7 @@ export default {
                 caption: `Added ${this.locationName} to favorites.`,
                 color: 'positive'
             })
+            this.$emit('addToFavorites');
         }
     },
     mounted: function () {
@@ -111,6 +113,7 @@ export default {
 .location-name .name {
     font-size: 1.5rem;
     font-weight:400;
+    text-align: center;
 }
 
 .location-name .current-temp {

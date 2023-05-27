@@ -7,7 +7,8 @@
             :min-temp="minTemp"
             :max-temp="maxTemp"
             :mean-temp="meanTemp"
-            :current-temp="currentTemp">
+            :current-temp="currentTemp"
+            @add-to-favorites="onAddToFavorites">
         </ImageData>
 
         <q-card-section class="numeric-data">
@@ -63,6 +64,7 @@ export default {
     name: 'WeatherTile',
     components: { 'Line': Line,
                   'ImageData': ImageData },
+    emits: ['addToFavorites'],
 
     props: {
         featureData: { type: Object, required: true},
@@ -203,6 +205,9 @@ export default {
 
             this.chartLoaded = true;
         },
+        onAddToFavorites: function() {
+            this.$emit('addToFavorites');
+        }
     },
     mounted: async function () {
         if (this.initialRender) {

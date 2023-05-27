@@ -1,9 +1,6 @@
 <template>
-    <article glossy class="favorite-tile" 
-            @mouseover="crossButtonVisible = true" 
-            @mouseleave="crossButtonVisible = false">
-        <q-btn glossy rounded color="primary" text-white class="button" 
-            @click="selectFavoriteTile">
+    <article glossy class="favorite-tile" @mouseover="crossButtonVisible = true" @mouseleave="crossButtonVisible = false">
+        <q-btn glossy rounded color="primary" text-white class="button" @click="selectFavoriteTile">
             <div class="favorite-tile-contents">
                 <div class="image"><img :src="weatherIconPath" /></div>
                 <p class="title">{{ locationName }}</p>
@@ -13,8 +10,7 @@
         </q-btn>
 
         <Transition name="fade-fast">
-            <q-btn v-if="crossButtonVisible" 
-                glossy rounded color="negative" text-white class="cross-button"
+            <q-btn v-if="crossButtonVisible" glossy rounded color="negative" text-white class="cross-button"
                 @click="removeFavoriteTile">
                 X
             </q-btn>
@@ -71,16 +67,25 @@ export default {
     },
 
     mounted: async function () {
-        this.selectedFeatureWeatherData = await callWeatherAPI(
-            this.$props.selectedFeature.geometry.coordinates[1],
-            this.$props.selectedFeature.geometry.coordinates[0]
-        )
+        try {
+            this.selectedFeatureWeatherData = await callWeatherAPI(
+                this.$props.selectedFeature.geometry.coordinates[1],
+                this.$props.selectedFeature.geometry.coordinates[0]
+            )
+        } catch (error) {
+            Notify.create({
+                message: 'Error!',
+                caption: `Encountered an error while calling for weather data for 
+                    ${this.$props.selectedFeature.properties.geocoding.name}. 
+                    Please try again later or contact our staff.`,
+                color: 'negative'
+            });
+        }
 
         let date = new Date;
         let path = getWeathercodeIcon(this.selectedFeatureWeatherData.hourly.weathercode[0], date.getHours());
         this.weatherIconPath = path;
 
-        console.log(this.selectedFeatureWeatherData.hourly.temperature_2m)
         this.currentTemp = this.selectedFeatureWeatherData.hourly.temperature_2m[0];
     },
 
