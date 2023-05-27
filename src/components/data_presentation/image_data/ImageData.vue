@@ -6,7 +6,7 @@
         <div class="image-description">
             <div class="location-name">
                 <p class="name">{{ locationName }}</p>
-                <p class="period">(7 days)</p>
+                <p class="current-temp">{{ currentTemp }}°C</p>
             </div>
             <q-separator></q-separator>
             <div class="location-description">
@@ -43,6 +43,7 @@ export default {
     props: {
         weatherIconPath: { type: String, required: true },
         locationName: { type: String, required: true },
+        currentTemp: { type: Number, required: true },
         minTemp: { type: Number, required: true },
         maxTemp: { type: Number, required: true },
         meanTemp: { type: Number, required: true },
@@ -109,10 +110,13 @@ export default {
 
 .location-name .name {
     font-size: 1.5rem;
+    font-weight:400;
 }
 
-.location-name .period {
-    font-size: 0.8rem;
+.location-name .current-temp {
+    font-size: 1rem;
+    font-weight: 400;
+    color: $primary;
 }
 
 .location-name {

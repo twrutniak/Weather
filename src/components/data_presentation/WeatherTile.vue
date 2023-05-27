@@ -6,7 +6,8 @@
             :location-name="locationName"
             :min-temp="minTemp"
             :max-temp="maxTemp"
-            :mean-temp="meanTemp">
+            :mean-temp="meanTemp"
+            :current-temp="currentTemp">
         </ImageData>
 
         <q-card-section class="numeric-data">
@@ -83,6 +84,7 @@ export default {
             minTemp: Number,
             maxTemp: Number,
             meanTemp: Number,
+            currentTemp: Number,
             initialRender: true,
             chartOptions: {
                 scales: {
@@ -153,6 +155,7 @@ export default {
             let visibility_data = this.$props.weatherData.hourly.visibility;
 
             // Getting basic weather info
+            this.currentTemp = temperature_data[0];
             this.maxTemp = Math.max.apply(Math, temperature_data);
             this.minTemp = Math.min.apply(Math, temperature_data);
             this.meanTemp = (temperature_data.reduce((a, b) => a + b, 0) / temperature_data.length).toFixed(1);

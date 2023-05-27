@@ -30,8 +30,7 @@
 <script>
 import MainHeader from './components/MainHeader.vue';
 import FavoritesGrid from './components/favorites_grid/FavoritesGrid.vue';
-import axios from 'axios';
-import { constructWeatherURL } from '@/helper_functions';
+import { callWeatherAPI } from '@/helper_functions';
 import LoadingOverlay from './components/LoadingOverlay.vue';
 import WeatherTile from './components/data_presentation/WeatherTile.vue';
 
@@ -64,25 +63,14 @@ export default {
     onSuggestionClick: async function (featureData) {
       this.selectedFeature = featureData;
       this.$refs['loading-overlay'].openOverlay();
-      await this.callWeatherAPI();
+
+      this.selectedFeatureWeatherData = await callWeatherAPI(        
+        this.selectedFeature.geometry.coordinates[1],
+        this.selectedFeature.geometry.coordinates[0]
+      )
+
       this.$refs['loading-overlay'].closeOverlay();
       this.weatherDataVisible = true;
-    },
-
-    callWeatherAPI: async function () {
-      let url = constructWeatherURL(
-        // API base URL
-        process.env.VUE_APP_WEATHER_URL,
-        // latitude
-        this.selectedFeature.geometry.coordinates[1],
-        // longitude
-        this.selectedFeature.geometry.coordinates[0],
-        // forecast days
-        7,
-      );
-      await axios.get(url).then(response => {
-        this.selectedFeatureWeatherData = response.data;
-      });
     },
     onFavoriteTileSelected: async function(data) {
       await this.onSuggestionClick(data);

@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 function constructWeatherURL(
     base_url = 'https://api.open-meteo.com/v1',
     latitude,
@@ -6,6 +8,24 @@ function constructWeatherURL(
 ) {
     let url_string = base_url + `/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,precipitation_probability,weathercode,surface_pressure,visibility&forecast_days=${forecast_days}`;
     return url_string;
+}
+
+async function callWeatherAPI(latitude, longitude) {
+    let weather_data = {};
+    let url = constructWeatherURL(
+        // API base URL
+        process.env.VUE_APP_WEATHER_URL,
+        // latitude
+        latitude,
+        // longitude
+        longitude,
+        // forecast days
+        7,
+    );
+    await axios.get(url).then(response => {
+        weather_data = response.data;
+    });
+    return weather_data;
 }
 
 function getWeathercodeIcon(weathercode, time) {
@@ -84,3 +104,4 @@ export { getLocalStorageItem }
 export { getWeatherFavorites }
 export { addWeatherFavorite }
 export { removeWeatherFavorite }
+export { callWeatherAPI }

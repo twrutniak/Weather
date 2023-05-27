@@ -1,12 +1,25 @@
 <template>
-    <article glossy class="favorite-tile">
-        <q-btn @click="selectFavoriteTile" glossy rounded color="primary" text-white class="button">
+    <article glossy class="favorite-tile" 
+            @mouseover="crossButtonVisible = true" 
+            @mouseleave="crossButtonVisible = false">
+        <q-btn glossy rounded color="primary" text-white class="button" 
+            @click="selectFavoriteTile">
             <div class="favorite-tile-contents">
                 <div class="image"><img :src="weatherIconPath" /></div>
                 <p class="title">{{ locationName }}</p>
                 <p class="data">{{ currentTemp }}°C</p>
             </div>
+
         </q-btn>
+
+        <Transition name="fade-fast">
+            <q-btn v-if="crossButtonVisible" 
+                glossy rounded color="negative" text-white class="cross-button"
+                @click="removeFavoriteTile">
+                X
+            </q-btn>
+        </Transition>
+
     </article>
 </template>
   
@@ -14,12 +27,11 @@
 <script>
 import { Notify } from 'quasar';
 import { getWeathercodeIcon } from '@/helper_functions';
-import axios from 'axios';
-import { constructWeatherURL } from '@/helper_functions';
+import { callWeatherAPI } from '@/helper_functions';
 
 export default {
     name: 'FavoritesTile',
-    emits: ['favoriteTileSelected'],
+    emits: ['favoriteTileSelected', 'favoriteTileRemoved'],
     props: {
         selectedFeature: { type: Object, required: true },
     },
@@ -28,6 +40,7 @@ export default {
         return {
             selectedFeatureWeatherData: {},
             weatherIconPath: String,
+            crossButtonVisible: false,
             currentTemp: {},
         };
     },
@@ -47,25 +60,21 @@ export default {
             });
             this.$emit('favoriteTileSelected', this.$props.selectedFeature);
         },
-        callWeatherAPI: async function () {
-            let url = constructWeatherURL(
-                // API base URL
-                process.env.VUE_APP_WEATHER_URL,
-                // latitude
-                this.$props.selectedFeature.geometry.coordinates[1],
-                // longitude
-                this.$props.selectedFeature.geometry.coordinates[0],
-                // forecast days
-                7,
-            );
-            await axios.get(url).then(response => {
-                this.selectedFeatureWeatherData = response.data;
+        removeFavoriteTile: function () {
+            Notify.create({
+                message: 'Success!',
+                caption: `Deleted ${this.locationName} from favorites.`,
+                color: 'positive'
             });
+            this.$emit('favoriteTileRemoved', this.$props.selectedFeature);
         }
     },
 
     mounted: async function () {
-        await this.callWeatherAPI();
+        this.selectedFeatureWeatherData = await callWeatherAPI(
+            this.$props.selectedFeature.geometry.coordinates[1],
+            this.$props.selectedFeature.geometry.coordinates[0]
+        )
 
         let date = new Date;
         let path = getWeathercodeIcon(this.selectedFeatureWeatherData.hourly.weathercode[0], date.getHours());
@@ -82,6 +91,7 @@ export default {
     display: flex;
     flex-flow: column;
     flex-basis: 50%;
+    max-width: 50%;
 
     aspect-ratio: 1/1;
 
@@ -118,4 +128,11 @@ export default {
 
 .favorite-tile-contents .data {
     font-size: 0.725rem;
-}</style>
+}
+
+.cross-button {
+    position: absolute;
+    z-index: 10;
+    font-weight: bold;
+}
+</style>
